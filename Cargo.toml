@@ -1,0 +1,10 @@
+[package]
+name = "cell-calculator"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cell-automata-1d = "0.1.0"
+simple_interpreter = "0.1.0"
