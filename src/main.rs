@@ -12,28 +12,32 @@ fn main() {
         ("|", OrOp),
         ("^", XorOp),
         ("~", NotOp),
+        ("=", EqOp),
         ("(", LeftBrace),
         (")", RightBrace) 
     ]);
 
     let oper_prioriry_map = HashMap::from([
-        (OrOp, 1),
-        (XorOp, 1),
-        (AndOp, 2),
-        (NotOp, 3)
+        (EqOp, 1),
+        (OrOp, 2),
+        (XorOp, 2),
+        (AndOp, 3),
+        (NotOp, 4)
     ]);
 
     let oper_args_count_map = HashMap::from([
         (OrOp, 2),
         (XorOp, 2),
         (AndOp, 2),
+        (EqOp, 2),
         (NotOp, 1)
     ]);
 
     let mut or_op = CellOperator::new(0xfc);
-    let mut xor_op = CellOperator::new(0xc3);
+    let mut xor_op = CellOperator::new(0x3c);
     let mut and_op = CellOperator::new(0xc0);
-    let mut not_op = CellOperator::new(0xcc);
+    let mut not_op = CellOperator::new(0x33);
+    let mut eq_op = CellOperator::new(0xc3);
 
     let eval_oper_with_automata = |stack: &mut Vec<u8>, op: &Token| -> Result<u8, String> {
         match op {
@@ -48,6 +52,7 @@ fn main() {
                     OrOp => Ok(or_op.eval(lhs, rhs)),
                     XorOp => Ok(xor_op.eval(lhs, rhs)),
                     AndOp => Ok(and_op.eval(lhs, rhs)),
+                    EqOp => Ok(eq_op.eval(lhs, rhs)),
                     _ => Err(format!("Logic error: unhandled operation {op}!"))
                 }
             }
@@ -61,20 +66,6 @@ fn main() {
         eval_oper_with_automata
     );
 
-    // let mut input = String::new();
-    // loop {
-    //     print!("> ");
-    //     io::stdout().lock().flush().expect("Failed to flush stdout!");
-    //     match io::stdin().read_line(&mut input) {
-    //         Ok(_) => (),
-    //         Err(str) => println!("Cannot read input: {str}")
-    //     }
-    //     match interpreter.evaluate(&input.trim()) {
-    //         Ok(val) => println!("> {val:b} ({val:x})"),
-    //         Err(str) => println!("> {str}")
-    //     }
-    // }
-
     let mut lines = io::stdin().lock().lines();
 
     while let Some(line) = lines.next() {
@@ -85,7 +76,7 @@ fn main() {
         }
 
         match interpreter.evaluate(&(last_input.trim())) {
-            Ok(val) => println!("> {val:b} ({val:x})"),
+            Ok(val) => println!("> {val:08b} ({val:x})"),
             Err(str) => println!("! {str}")
         }
     }
